@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="مُنشئ التطبيقات">
+  <title>مُنشئ التطبيقات الذكي - AI App Generator</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Zustand Store -->
+  <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.0/+esm"></script>
+  
+  <style>
+    * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea, button {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    #root {
+      height: 100%;
+      width: 100%;
+      display: flex;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    input[type='text'],
+    input[type='email'],
+    input[type='number'],
+    textarea {
+      font-size: 16px;
+    }
+    .message-animation {
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    // ==================== CODE GENERATOR ENGINE ====================
+    function parseAppIdea(prompt) {
+      const isArabic = /[\u0600-\u06FF]/.test(prompt);
+      const lowerPrompt = prompt.toLowerCase();
+
+      let type = 'general';
+      let theme = 'modern';
+
+      if (lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.includes('مهام')) type = 'todo';
+      else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('حاسب')) type = 'calculator';
+      else if (lowerPrompt.includes('timer') || lowerPrompt.includes('stopwatch') || lowerPrompt.includes('مؤقت')) type = 'timer';
+      else if (lowerPrompt.includes('note') || lowerPrompt.includes('ملاحظ')) type = 'notes';
+
+      if (lowerPrompt.includes('dark') || lowerPrompt.includes('داكن')) theme = 'dark';
+      else if (lowerPrompt.includes('light') || lowerPrompt.includes('فاتح')) theme = 'light';
+
+      return {
+        type,
+        title: prompt.split('\n')[0].substring(0, 50),
+        description: prompt,
+        theme,
+        isArabic,
+      };
+    }
+
+    function generateTodoApp(idea) {
+      const isArabic = idea.isArabic;
+      const isDark = idea.theme === 'dark';
+
+      const html = `<!DOCTYPE html>
+<html lang="${isArabic ? 'ar' : 'en'}" dir="${isArabic ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${idea.title}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: ${isDark ? '#0f172a' : '#f8fafc'};
+      color: ${isDark ? '#f1f5f9' : '#0f172a'};
+      min-height: 100vh;
+      padding: 10px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 16px 0;
+      border-bottom: 2px solid ${isDark ? '#1e293b' : '#e2e8f0'};
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid ${isDark ? '#334155' : '#cbd5e1'};
+      border-radius: 12px;
+      background: ${isDark ? '#1e293b' : '#ffffff'};
+      color: ${isDark ? '#f1f5f9' : '#0f172a'};
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .todo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: ${isDark ? '#1e293b' : '#ffffff'};
+      border-radius: 12px;
+      border: 1px solid ${isDark ? '#334155' : '#e2e8f0'};
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .todo-item input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      accent-color: #3b82f6;
+    }
+    .todo-text {
+      flex: 1;
+      font-size: 16px;
+      word-break: break-word;
+    }
+    .todo-item input[type="checkbox"]:checked ~ .todo-text {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+    .delete-btn {
+      background: #ef4444;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: ${isDark ? '#94a3b8' : '#64748b'};
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const app = {
+      todos: [],
+      init() {
+        this.loadTodos();
+        this.render();
+        this.attachEventListeners();
+      },
+      attachEventListeners() {
+        const input = document.querySelector('input[type="text"]');
+        const btn = document.querySelector('button.add-btn');
+        btn?.addEventListener('click', () => this.addTodo(input.value, input));
+        input?.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.addTodo(input.value, input);
+        });
+      },
+      addTodo(text, inputElement) {
+        if (!text.trim()) return;
+        const todo = {
+          id: Date.now(),
+          text: text.trim(),
+          completed: false,
+        };
+        this.todos.unshift(todo);
+        this.saveTodos();
+        this.render();
+        inputElement.value = '';
+      },
+      toggleTodo(id) {
+        const todo = this.todos.find(t => t.id === id);
+        if (todo) todo.completed = !todo.completed;
+        this.saveTodos();
+        this.render();
+      },
+      deleteTodo(id) {
+        this.todos = this.todos.filter(t => t.id !== id);
+        this.saveTodos();
+        this.render();
+      },
+      render() {
+        const container = document.getElementById('app');
+        container.innerHTML = \`
+          <div class="container">
+            <header>
+              <h1>📝 ${isArabic ? 'قائمتي' : 'My Todo List'}</h1>
+            </header>
+            <div class="input-group">
+              <input type="text" placeholder="${isArabic ? 'أضف مهمة جديدة...' : 'Add a new task...'}"/>
+              <button class="add-btn">${isArabic ? 'إضافة' : 'Add'}</button>
+            </div>
+            \${this.todos.length > 0 ? \`
+              <div class="todo-list">
+                \${this.todos.map(todo => \`
+                  <div class="todo-item">
+                    <input type="checkbox" \${todo.completed ? 'checked' : ''} onchange="app.toggleTodo(\${todo.id})" />
+                    <span class="todo-text">\${this.escapeHtml(todo.text)}</span>
+                    <button class="delete-btn" onclick="app.deleteTodo(\${todo.id})">🗑️</button>
+                  </div>
+                \`).join('')}
+              </div>
+            \` : \`
+              <div class="empty-state">
+                <p>${isArabic ? '🎯 لا توجد مهام حالياً' : '🎯 No tasks yet'}</p>
+                <p>${isArabic ? 'ابدأ بإضافة مهمة جديدة!' : 'Start by adding a new task!'}</p>
+              </div>
+            \`}
+          </div>
+        \`;
+        this.attachEventListeners();
+      },
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+      saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+      },
+      loadTodos() {
+        try {
+          const saved = localStorage.getItem('todos');
+          this.todos = saved ? JSON.parse(saved) : [];
+        } catch (e) {
+          this.todos = [];
+        }
+      },
+    };
+    app.init();
+  <\/script>
+</body>
+</html>`;
+
+      return { html, css: '', js: '' };
+    }
+
+    function generateCalculatorApp(idea) {
+      const isArabic = idea.isArabic;
+      const isDark = idea.theme === 'dark';
+
+      const html = `<!DOCTYPE html>
+<html lang="${isArabic ? 'ar' : 'en'}" dir="${isArabic ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${idea.title}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: ${isDark ? '#0f172a' : '#f8fafc'};
+      color: ${isDark ? '#f1f5f9' : '#0f172a'};
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .calculator {
+      width: 100%;
+      max-width: 400px;
+      background: ${isDark ? '#1e293b' : '#ffffff'};
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    .display {
+      background: ${isDark ? '#0f172a' : '#f1f5f9'};
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    .display-value {
+      font-size: 36px;
+      font-weight: 700;
+      word-break: break-all;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      background: ${isDark ? '#334155' : '#e2e8f0'};
+      color: ${isDark ? '#f1f5f9' : '#0f172a'};
+    }
+    .operator {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+    .equals {
+      background: linear-gradient(135deg, #10b981, #14b8a6);
+      color: white;
+      grid-column: span 2;
+    }
+    .clear {
+      background: #ef4444;
+      color: white;
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const calculator = {
+      display: '0',
+      firstValue: null,
+      operator: null,
+      shouldResetDisplay: false,
+      render() {
+        const app = document.getElementById('app');
+        const buttons = [
+          ['C', '←', '%', '÷'],
+          ['7', '8', '9', '×'],
+          ['4', '5', '6', '-'],
+          ['1', '2', '3', '+'],
+          ['0', '.', '='],
+        ];
+        app.innerHTML = \`
+          <div class="calculator">
+            <div class="display">
+              <div class="display-value" id="display">\${this.display}</div>
+            </div>
+            <div class="buttons">
+              \${buttons.map(row => \`
+                \${row.map(btn => \`
+                  <button onclick="calculator.handleInput('\${btn}')" class="\${this.getButtonClass(btn)}">\${btn}</button>
+                \`).join('')}
+              \`).join('')}
+            </div>
+          </div>
+        \`;
+      },
+      getButtonClass(btn) {
+        if (btn === 'C') return 'clear';
+        if (btn === '=') return 'equals';
+        if (['+', '-', '×', '÷', '%'].includes(btn)) return 'operator';
+        return '';
+      },
+      handleInput(value) {
+        if (value === 'C') {
+          this.display = '0';
+          this.firstValue = null;
+          this.operator = null;
+          this.shouldResetDisplay = false;
+        } else if (value === '←') {
+          this.display = this.display.length > 1 ? this.display.slice(0, -1) : '0';
+        } else if (value === '.') {
+          if (!this.display.includes('.')) {
+            this.display += '.';
+            this.shouldResetDisplay = false;
+          }
+        } else if (['+', '-', '×', '÷', '%'].includes(value)) {
+          const currentValue = parseFloat(this.display);
+          if (this.firstValue === null) {
+            this.firstValue = currentValue;
+          } else if (!this.shouldResetDisplay) {
+            this.firstValue = this.calculate(this.firstValue, currentValue, this.operator);
+            this.display = this.firstValue.toString();
+          }
+          this.operator = value;
+          this.shouldResetDisplay = true;
+        } else if (value === '=') {
+          if (this.firstValue !== null && this.operator) {
+            const currentValue = parseFloat(this.display);
+            this.display = this.calculate(this.firstValue, currentValue, this.operator).toString();
+            this.firstValue = null;
+            this.operator = null;
+            this.shouldResetDisplay = true;
+          }
+        } else {
+          this.display = this.shouldResetDisplay ? value : (this.display === '0' ? value : this.display + value);
+          this.shouldResetDisplay = false;
+        }
+        this.render();
+      },
+      calculate(first, second, op) {
+        switch (op) {
+          case '+': return first + second;
+          case '-': return first - second;
+          case '×': return first * second;
+          case '÷': return second === 0 ? 0 : first / second;
+          case '%': return first % second;
+          default: return second;
+        }
+      },
+    };
+    calculator.render();
+  <\/script>
+</body>
+</html>`;
+
+      return { html, css: '', js: '' };
+    }
+
+    function generateGeneralApp(idea) {
+      const isArabic = idea.isArabic;
+      const isDark = idea.theme === 'dark';
+
+      const html = `<!DOCTYPE html>
+<html lang="${isArabic ? 'ar' : 'en'}" dir="${isArabic ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${idea.title}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: ${isDark ? '#0f172a' : '#f8fafc'};
+      color: ${isDark ? '#f1f5f9' : '#0f172a'};
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .feature-card {
+      background: ${isDark ? '#1e293b' : '#ffffff'};
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid ${isDark ? '#334155' : '#e2e8f0'};
+      transition: all 0.3s ease;
+    }
+    .feature-card .emoji {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    button {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const app = {
+      init() {
+        this.render();
+      },
+      render() {
+        const features = [
+          { emoji: '⚡', title: '${isArabic ? 'سريع' : 'Fast'}' },
+          { emoji: '🎨', title: '${isArabic ? 'جميل' : 'Beautiful'}' },
+          { emoji: '📱', title: '${isArabic ? 'موبايل' : 'Mobile'}' },
+          { emoji: '🚀', title: '${isArabic ? 'قوي' : 'Powerful'}' },
+        ];
+        document.getElementById('app').innerHTML = \`
+          <div class="container">
+            <header>
+              <h1>✨ ${idea.title}</h1>
+              <p>${isArabic ? 'تم إنشاء هذا التطبيق باستخدام مُنشئ التطبيقات الذكي' : 'Built with AI App Generator'}</p>
+            </header>
+            <div class="feature-grid">
+              \${features.map(f => \`
+                <div class="feature-card">
+                  <div class="emoji">\${f.emoji}</div>
+                  <div class="title">\${f.title}</div>
+                </div>
+              \`).join('')}
+            </div>
+            <button onclick="app.handleClick()">${isArabic ? 'ابدأ الآن' : 'Get Started'}</button>
+          </div>
+        \`;
+      },
+      handleClick() {
+        alert('${isArabic ? 'رائع! ابدأ بتطويرك' : 'Great! Start building'}');
+      },
+    };
+    app.init();
+  <\/script>
+</body>
+</html>`;
+
+      return { html, css: '', js: '' };
+    }
+
+    function generateCodeFromPrompt(prompt) {
+      const idea = parseAppIdea(prompt);
+      switch (idea.type) {
+        case 'todo':
+          return generateTodoApp(idea);
+        case 'calculator':
+          return generateCalculatorApp(idea);
+        default:
+          return generateGeneralApp(idea);
+      }
+    }
+
+    // ==================== STATE MANAGEMENT ====================
+    let appState = {
+      messages: [{
+        id: '1',
+        text: 'مرحباً! 👋 أنا مُنشئ التطبيقات الذكي. صف لي فكرة تطبيقك وسأقوم بإنشاء واجهة عمل كاملة لك!\n\nHello! 👋 I\'m your AI app builder. Describe your app idea and I\'ll generate a fully working interface for you!',
+        sender: 'assistant',
+        timestamp: Date.now(),
+      }],
+      generatedCode: {
+        html: '',
+      },
+      loading: false,
+    };
+
+    const listeners = [];
+
+    function subscribe(listener) {
+      listeners.push(listener);
+      return () => {
+        listeners.splice(listeners.indexOf(listener), 1);
+      };
+    }
+
+    function setState(newState) {
+      appState = { ...appState, ...newState };
+      listeners.forEach(listener => listener(appState));
+    }
+
+    function getState() {
+      return appState;
+    }
+
+    // ==================== UI COMPONENTS ====================
+    function ChatInterface() {
+      const state = getState();
+      const messagesEndRef = { current: null };
+
+      function handleSendMessage(input) {
+        if (!input.trim()) return;
+
+        setState({
+          messages: [...state.messages, {
+            id: Math.random().toString(36).substring(7),
+            text: input,
+            sender: 'user',
+            timestamp: Date.now(),
+          }],
+        });
+
+        setState({ loading: true });
+
+        setTimeout(() => {
+          try {
+            const code = generateCodeFromPrompt(input);
+            setState({ generatedCode: code });
+
+            const isArabic = /[\u0600-\u06FF]/.test(input);
+            setState({
+              messages: [...getState().messages, {
+                id: Math.random().toString(36).substring(7),
+                text: isArabic
+                  ? `✅ تم إنشاء التطبيق بنجاح! يمكنك الآن:\n• عرض التطبيق في تبويب "Preview"\n• نسخ الكود في تبويب "Code"\n• تحميل التطبيق`
+                  : `✅ App created successfully! You can now:\n• Preview it in the "Preview" tab\n• Copy the code in the "Code" tab\n• Download it`,
+                sender: 'assistant',
+                timestamp: Date.now(),
+              }],
+              loading: false,
+            });
+          } catch (error) {
+            setState({
+              messages: [...getState().messages, {
+                id: Math.random().toString(36).substring(7),
+                text: 'خطأ! حاول مرة أخرى',
+                sender: 'assistant',
+                timestamp: Date.now(),
+              }],
+              loading: false,
+            });
+          }
+        }, 500);
+      }
+
+      const html = `
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3" id="messages-container">
+            ${state.messages.map((msg) => `
+              <div class="flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} message-animation">
+                <div class="max-w-[85%] rounded-lg px-4 py-3 text-sm ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-700 text-gray-100 rounded-bl-none'}">
+                  ${msg.text.split('\n').map(line => `<div>${line}</div>`).join('')}
+                </div>
+              </div>
+            `).join('')}
+            ${state.loading ? `
+              <div class="flex justify-start">
+                <div class="bg-slate-700 text-gray-100 rounded-lg px-4 py-3 rounded-bl-none">
+                  <div class="flex gap-2 items-center">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="border-t border-slate-700 bg-slate-900/50 backdrop-blur px-4 py-3 space-y-2">
+            <textarea
+              id="input-textarea"
+              placeholder="اكتب فكرة تطبيقك... (عربي أو إنجليزي) / Write your app idea..."
+              class="w-full bg-slate-800 text-white placeholder-gray-400 border border-slate-700 rounded-lg px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 max-h-24"
+              rows="2"
+            ></textarea>
+            <button
+              id="send-btn"
+              class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-lg active:scale-95 transition-all"
+            >
+              ${state.loading ? '⏳ جاري الإنشاء...' : '🚀 إنشاء التطبيق'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    function PreviewPanel() {
+      const state = getState();
+      if (!state.generatedCode.html) {
+        return `
+          <div class="flex-1 flex items-center justify-center">
+            <div class="text-center text-gray-400">
+              <p class="text-xl mb-2">📱 معاينة التطبيق</p>
+              <p class="text-sm">أنشئ تطبيق أولاً لرؤية المعاينة هنا</p>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="flex-1 flex flex-col overflow-hidden bg-slate-800">
+          <iframe
+            id="preview-frame"
+            class="w-full h-full border-0 bg-white"
+            title="App Preview"
+            sandbox="allow-scripts allow-same-origin allow-storage"
+          ></iframe>
+        </div>
+      `;
+    }
+
+    function CodeViewer() {
+      const state = getState();
+      if (!state.generatedCode.html) {
+        return `
+          <div class="flex-1 flex items-center justify-center">
+            <div class="text-center text-gray-400">
+              <p class="text-xl mb-2">{'</>'} الكود</p>
+              <p class="text-sm">أنشئ تطبيق أولاً لرؤية الكود هنا</p>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="flex-1 overflow-auto p-4 bg-slate-900 text-gray-100 text-xs leading-relaxed font-mono">
+            <pre><code id="code-display">${state.generatedCode.html}</code></pre>
+          </div>
+          <div class="border-t border-slate-700 bg-slate-800/50 backdrop-blur px-4 py-3 flex gap-2">
+            <button
+              id="copy-btn"
+              class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white active:scale-95 transition-all"
+            >
+              📋 نسخ الكود
+            </button>
+            <button
+              id="download-btn"
+              class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm bg-purple-600 hover:bg-purple-700 text-white active:scale-95 transition-all"
+            >
+              📥 تحميل HTML
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function App() {
+      const state = getState();
+      let activeTab = 'chat';
+
+      const html = `
+        <div class="h-screen w-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+          <!-- Header -->
+          <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur border-b border-slate-700 px-4 py-3 shadow-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">AI</div>
+                <h1 class="text-lg font-bold truncate">مُنشئ التطبيقات</h1>
+              </div>
+              <span class="text-xs bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full font-semibold">v2.0</span>
+            </div>
+          </header>
+
+          <!-- Main Content -->
+          <main class="flex-1 overflow-hidden flex flex-col" id="main-content">
+            ${ChatInterface()}
+          </main>
+
+          <!-- Bottom Navigation -->
+          <nav class="sticky bottom-0 z-30 bg-slate-900/95 backdrop-blur border-t border-slate-700 px-2 py-2 flex gap-1 justify-around">
+            <button id="tab-chat" class="flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all duration-200 flex flex-col items-center gap-1 bg-blue-600 text-white shadow-lg shadow-blue-500/50">
+              <span>💬</span>
+              <span>Chat</span>
+            </button>
+            <button id="tab-preview" class="flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all duration-200 flex flex-col items-center gap-1 ${state.generatedCode.html ? 'bg-slate-800 text-gray-300 hover:bg-slate-700' : 'bg-slate-800 text-gray-500 opacity-50 cursor-not-allowed'}" ${!state.generatedCode.html ? 'disabled' : ''}>
+              <span>👁️</span>
+              <span>Preview</span>
+            </button>
+            <button id="tab-code" class="flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all duration-200 flex flex-col items-center gap-1 ${state.generatedCode.html ? 'bg-slate-800 text-gray-300 hover:bg-slate-700' : 'bg-slate-800 text-gray-500 opacity-50 cursor-not-allowed'}" ${!state.generatedCode.html ? 'disabled' : ''}>
+              <span>{'</>'}</span>
+              <span>Code</span>
+            </button>
+          </nav>
+        </div>
+      `;
+
+      return html;
+    }
+
+    // ==================== RENDER & EVENT HANDLING ====================
+    function render() {
+      const root = document.getElementById('root');
+      root.innerHTML = App();
+
+      // Tab switching
+      const state = getState();
+      document.getElementById('tab-chat').addEventListener('click', () => {
+        document.getElementById('main-content').innerHTML = ChatInterface();
+        setupChatEvents();
+        updateTabButtons('chat');
+      });
+
+      if (state.generatedCode.html) {
+        document.getElementById('tab-preview').addEventListener('click', () => {
+          document.getElementById('main-content').innerHTML = PreviewPanel();
+          setupPreviewEvents();
+          updateTabButtons('preview');
+        });
+
+        document.getElementById('tab-code').addEventListener('click', () => {
+          document.getElementById('main-content').innerHTML = CodeViewer();
+          setupCodeEvents();
+          updateTabButtons('code');
+        });
+      }
+
+      setupChatEvents();
+    }
+
+    function updateTabButtons(active) {
+      ['chat', 'preview', 'code'].forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        if (tab === active) {
+          btn.className = 'flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all duration-200 flex flex-col items-center gap-1 bg-blue-600 text-white shadow-lg shadow-blue-500/50';
+        } else {
+          const state = getState();
+          const isDisabled = (tab !== 'chat') && !state.generatedCode.html;
+          btn.className = `flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all duration-200 flex flex-col items-center gap-1 ${isDisabled ? 'bg-slate-800 text-gray-500 opacity-50' : 'bg-slate-800 text-gray-300 hover:bg-slate-700'}`;
+        }
+      });
+    }
+
+    function setupChatEvents() {
+      const textarea = document.getElementById('input-textarea');
+      const sendBtn = document.getElementById('send-btn');
+      const messagesContainer = document.getElementById('messages-container');
+
+      if (sendBtn) {
+        sendBtn.addEventListener('click', () => {
+          handleSendMessage(textarea.value);
+          textarea.value = '';
+        });
+      }
+
+      if (textarea) {
+        textarea.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage(textarea.value);
+            textarea.value = '';
+          }
+        });
+      }
+    }
+
+    function setupPreviewEvents() {
+      const state = getState();
+      const iframe = document.getElementById('preview-frame');
+      if (iframe && state.generatedCode.html) {
+        iframe.srcdoc = state.generatedCode.html;
+      }
+    }
+
+    function setupCodeEvents() {
+      const state = getState();
+      const copyBtn = document.getElementById('copy-btn');
+      const downloadBtn = document.getElementById('download-btn');
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(state.generatedCode.html).then(() => {
+            copyBtn.textContent = '✅ تم النسخ!';
+            copyBtn.classList.add('bg-green-600');
+            setTimeout(() => {
+              copyBtn.textContent = '📋 نسخ الكود';
+              copyBtn.classList.remove('bg-green-600');
+            }, 2000);
+          });
+        });
+      }
+
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+          const blob = new Blob([state.generatedCode.html], { type: 'text/html' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'app.html';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
+    }
+
+    function handleSendMessage(input) {
+      if (!input.trim()) return;
+      const state = getState();
+      setState({
+        messages: [...state.messages, {
+          id: Math.random().toString(36).substring(7),
+          text: input,
+          sender: 'user',
+          timestamp: Date.now(),
+        }],
+      });
+
+      setState({ loading: true });
+      render();
+
+      setTimeout(() => {
+        try {
+          const code = generateCodeFromPrompt(input);
+          setState({ generatedCode: code });
+
+          const isArabic = /[\u0600-\u06FF]/.test(input);
+          const state2 = getState();
+          setState({
+            messages: [...state2.messages, {
+              id: Math.random().toString(36).substring(7),
+              text: isArabic
+                ? `✅ تم إنشاء التطبيق بنجاح! يمكنك الآن:\n• عرض التطبيق في تبويب "Preview"\n• نسخ الكود في تبويب "Code"\n• تحميل التطبيق`
+                : `✅ App created successfully! You can now:\n• Preview it in the "Preview" tab\n• Copy the code in the "Code" tab\n• Download it`,
+              sender: 'assistant',
+              timestamp: Date.now(),
+            }],
+            loading: false,
+          });
+        } catch (error) {
+          const state2 = getState();
+          setState({
+            messages: [...state2.messages, {
+              id: Math.random().toString(36).substring(7),
+              text: 'خطأ! حاول مرة أخرى',
+              sender: 'assistant',
+              timestamp: Date.now(),
+            }],
+            loading: false,
+          });
+        }
+        render();
+      }, 500);
+    }
+
+    subscribe(() => {
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
